@@ -3,16 +3,16 @@ function draw(){
   var canvas = document.getElementById('tutorial');  
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
-    var arr = [1000, 2, 3 , 4 ,500]
+    var arr = [12, 15, 45, 1, 2, 5]
     drawArray(arr, ctx)
   }  
 }  
 
-
-
-var ARRAY_HEIGHT = 50
-var START_X = 50
-var START_Y = 100
+var ARRAY_HEIGHT = 30
+var START_X = 25
+var START_Y = 50
+var FONT = 20
+var PIXELS_PER_DIGIT = 20
 
 function drawArray(array, ctx){
   var arrayWidth = maxCellWidth(array) * array.length  
@@ -39,8 +39,6 @@ function drawLinesBetweenElems(array ,ctx){
  }
 }
 
-var FONT = 20
-
 function drawElemns(array, ctx){
   cellWidth = maxCellWidth(array)
   currX = START_X
@@ -59,8 +57,6 @@ function drawElemns(array, ctx){
     currY += (ARRAY_HEIGHT / 2) + FONT / 2
   }
 }
-
-var PIXELS_PER_DIGIT = 25
 
 function maxCellWidth(array){
   var max = numDigits(array[0]) * PIXELS_PER_DIGIT
