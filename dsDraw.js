@@ -3,7 +3,7 @@ function draw(){
   var canvas = document.getElementById('tutorial');  
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
-    var arr = [100, 200, 300, 400, 0, 0, 2, "empty"]
+    var arr = [1,  "empty", null, 10, 20000]
     drawArray(arr, ctx)
   }  
 }  
@@ -15,16 +15,42 @@ var CELL_WIDTH;
 var START_X = 25
 var START_Y = 50
 var FONT = 20
-var PIXELS_PER_DIGIT = 20
+var PIXELS_PER_CHAR = 20
 
 
 function drawArray(array, ctx){
+  toStringArray(array)
+
   CELL_WIDTH = maxCellWidth(array)
   arrayWidth = CELL_WIDTH * array.length  
   
   ctx.strokeRect(START_X, START_Y, arrayWidth, ARRAY_HEIGHT);
   drawElems(array, ctx)
   drawLinesBetweenElems(array, ctx) 
+}
+
+function toStringArray(array){
+  for( i = 0 ; i < array.length ; i++){
+    array[i] = elementToString( array[i] )
+  }
+ }
+
+function elementToString(element){
+  if( typeof element === 'number' ){
+    return element + ""
+  }
+  else if ( element === null ){
+    return "null" 
+  }
+  else if( typeof element === 'object' || typeof element === 'boolean'){
+    return element.toString()
+  }
+  else if( typeof element == 'string' ){
+    return element
+  }
+  else {
+    return typeof element 
+  }
 }
 
 function drawElems(array, ctx){
@@ -58,22 +84,13 @@ function drawLinesBetweenElems(array ,ctx){
 }
 
 function maxCellWidth(array){
-  var max = numDigits(array[0]) * PIXELS_PER_DIGIT
+  var max = array[0].length * PIXELS_PER_CHAR
   var current;
-  for( elm in array){
-    current = numDigits(elm) * PIXELS_PER_DIGIT
+  for( i in array){
+    current = array[i].length * PIXELS_PER_CHAR
     if(current > max){
       max = current
     }
   }
   return max
-}
-
-function numDigits(num){
-  var digits = 0;
-  while(num > 0){
-    num = Math.floor(num / 10)
-    digits += 1
-  }
-  return digits
 }
