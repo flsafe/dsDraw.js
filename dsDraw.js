@@ -9,13 +9,18 @@ function draw(){
 }  
 
 var ARRAY_HEIGHT = 30
+var ARRAY_WIDTH;
+var CELL_WIDTH;
+
 var START_X = 25
 var START_Y = 50
 var FONT = 20
 var PIXELS_PER_DIGIT = 20
 
+
 function drawArray(array, ctx){
-  var arrayWidth = maxCellWidth(array) * array.length  
+  CELL_WIDTH = maxCellWidth(array)
+  arrayWidth = CELL_WIDTH * array.length  
   
   ctx.strokeRect(START_X, START_Y, arrayWidth, ARRAY_HEIGHT);
   drawElems(array, ctx)
@@ -23,26 +28,25 @@ function drawArray(array, ctx){
 }
 
 function drawElems(array, ctx){
-  cellWidth = maxCellWidth(array)
   currX = START_X
   currY = START_Y
-  currX += cellWidth / 2
+  currX += CELL_WIDTH / 2
   currY += (ARRAY_HEIGHT / 2) + FONT / 2
 
   for( i = 1 ; i <= array.length ; i++){
     ctx.font = FONT + "px monospace"
     ctx.textAlign = "center"
-    ctx.fillText( array[i-1], currX, currY, cellWidth )
-    currX = START_X + cellWidth * i
+    ctx.fillText( array[i-1], currX, currY, CELL_WIDTH )
+    currX = START_X + CELL_WIDTH * i
     currY = START_Y
 
-    currX += cellWidth / 2
+    currX += CELL_WIDTH / 2
     currY += (ARRAY_HEIGHT / 2) + FONT / 2
   }
 }
 
 function drawLinesBetweenElems(array ,ctx){
- spaceBetween = maxCellWidth(array)
+ spaceBetween = CELL_WIDTH
  numLines = array.length - 1
  for(i = 1 ; i <= numLines ; i++){
   currX = START_X + spaceBetween * i 
