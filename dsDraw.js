@@ -3,7 +3,7 @@ function draw(){
   var canvas = document.getElementById('tutorial');  
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
-    var arr = [1,  "empty", null, 10, 20000]
+    var arr = [1,  "empty", null, 10, 20000, "\\0"]
     drawArray(arr, ctx)
   }  
 }  
@@ -16,7 +16,6 @@ var START_X = 25
 var START_Y = 50
 var FONT = 20
 var PIXELS_PER_CHAR = 20
-
 
 function drawArray(array, ctx){
   toStringArray(array)
