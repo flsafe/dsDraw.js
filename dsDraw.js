@@ -19,25 +19,33 @@ function draw(){
 function drawDelete(array, index, ctx){
   var array = toStringArray(array)
   var deletedArray = deleteIndex(index, array)
-  sameWidth = {cellWidth: maxCellWidth(array)}
 
-  ctx.save()
-    drawArray(array, ctx, sameWidth)
-    ctx.translate(0, DELETE_VERT_MARGINE)
-    drawArray(deletedArray, ctx, sameWidth)
-  ctx.restore()
-
-  drawArrows(index, array.length, ctx)
+  drawStackedArrays(array, deletedArray, ctx)
+  drawShiftArrows(index, array.length, ctx)
 }
 
-function drawArrows(startIndex, arrayLength, ctx){
+function drawStackedArrays(arr1, arr2, ctx){
+  width = Math.max( maxCellWidth(arr1), maxCellWidth(arr2) )
+  sameWidth = {cellWidth: width}
+  ctx.save()
+    drawArray(arr1, ctx, sameWidth)
+    ctx.translate(0, DELETE_VERT_MARGINE)
+    drawArray(arr2, ctx, sameWidth)
+  ctx.restore()
+}
+
+function drawShiftArrows(startIndex, arrayLength, ctx){
  var arrowStart
  var arrowEnd
  for(i = startIndex ; i < arrayLength - 1 ; i++){
+   drawShiftArrow(i, ctx)
+ }
+}
+
+function drawShiftArrow(i, ctx){
   arrowStart = toBottonMiddle( nextPosition(i) )
   arrowEnd = calcArrowEnd(arrowStart)
   drawArrow(arrowStart, arrowEnd, ctx)
- }
 }
 
 function toBottonMiddle(pos){
