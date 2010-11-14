@@ -18,7 +18,7 @@ var FONT = 20
 var PIXELS_PER_CHAR = 20
 
 function drawArray(array, ctx){
-  toStringArray(array)
+  array = toStringArray(array)
 
   CELL_WIDTH = maxCellWidth(array)
   arrayWidth = CELL_WIDTH * array.length  
@@ -28,10 +28,14 @@ function drawArray(array, ctx){
   drawLinesBetweenElems(array, ctx) 
 }
 
+
 function toStringArray(array){
+  out = new Array(array.length)
+
   for( i = 0 ; i < array.length ; i++){
-    array[i] = elementToString( array[i] )
+    out[i] = elementToString( array[i] )
   }
+  return out
  }
 
 function elementToString(element){
@@ -73,6 +77,7 @@ function drawElems(array, ctx){
 function drawLinesBetweenElems(array ,ctx){
  var spaceBetween = CELL_WIDTH
  var numLines = array.length - 1
+
  for(i = 1 ; i <= numLines ; i++){
   currX = START_X + spaceBetween * i 
   ctx.beginPath()
