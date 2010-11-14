@@ -1,36 +1,32 @@
+var ARRAY_HEIGHT = 30
+var CELL_WIDTH
+var startPosition = {x: 25, y: 50}
+var FONT = 20
+var PIXELS_PER_CHAR = 20
 
 function draw(){  
   var canvas = document.getElementById('tutorial');  
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
+
     var arr = [1,  "empty", null, 10, 20000, "\\0"]
     drawArray(arr, ctx)
   }  
 }  
 
-var ARRAY_HEIGHT = 30
-var ARRAY_WIDTH;
-var CELL_WIDTH;
-
-var START_X = 25
-var START_Y = 50
-var FONT = 20
-var PIXELS_PER_CHAR = 20
-
 function drawArray(array, ctx){
-  array = toStringArray(array)
+  var array = toStringArray(array)
 
   CELL_WIDTH = maxCellWidth(array)
-  arrayWidth = CELL_WIDTH * array.length  
+  var arrayWidth = CELL_WIDTH * array.length  
   
-  ctx.strokeRect(START_X, START_Y, arrayWidth, ARRAY_HEIGHT);
+  ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, ARRAY_HEIGHT);
   drawElems(array, ctx)
   drawLinesBetweenElems(array, ctx) 
 }
 
-
 function toStringArray(array){
-  out = new Array(array.length)
+  var out = new Array(array.length)
 
   for( i = 0 ; i < array.length ; i++){
     out[i] = elementToString( array[i] )
@@ -57,40 +53,48 @@ function elementToString(element){
 }
 
 function drawElems(array, ctx){
-  var currX = START_X
-  var currY = START_Y
-  currX += CELL_WIDTH / 2
-  currY += (ARRAY_HEIGHT / 2) + FONT / 2
+  ctx.font = FONT + "px monospace"
+  ctx.textAlign = "center"
 
-  for( i = 1 ; i <= array.length ; i++){
-    ctx.font = FONT + "px monospace"
-    ctx.textAlign = "center"
-    ctx.fillText( array[i-1], currX, currY, CELL_WIDTH )
-    currX = START_X + CELL_WIDTH * i
-    currY = START_Y
-
-    currX += CELL_WIDTH / 2
-    currY += (ARRAY_HEIGHT / 2) + FONT / 2
+  var currPos = toMiddleOfCell(startPosition)
+  for( i = 0 ; i < array.length ; i++){
+    ctx.fillText( array[i], currPos.x, currPos.y, CELL_WIDTH )
+    currPos = toMiddleOfCell( nextPosition(i) ) 
   }
 }
 
-function drawLinesBetweenElems(array ,ctx){
- var spaceBetween = CELL_WIDTH
- var numLines = array.length - 1
+function nextPosition(iteration){
+  return {x: startPosition.x + CELL_WIDTH * (iteration + 1),
+          y: startPosition.y}
+}
 
- for(i = 1 ; i <= numLines ; i++){
-  currX = START_X + spaceBetween * i 
-  ctx.beginPath()
-  ctx.moveTo(currX, START_Y)
-  ctx.lineTo(currX, START_Y + ARRAY_HEIGHT)
-  ctx.stroke()
+function toMiddleOfCell(point){
+  return {x: point.x + CELL_WIDTH / 2,
+          y: point.y + (ARRAY_HEIGHT / 2) + FONT / 2}
+}
+
+function drawLinesBetweenElems(array ,ctx){
+ var numLines = array.length - 1
+ for(i = 0 ; i < numLines ; i++){
+  currPos = nextPosition(i)
+  drawLine(currPos, ARRAY_HEIGHT, ctx)
  }
 }
 
+function drawLine(from, height, ctx){
+  ctx.beginPath()
+  ctx.moveTo(from.x, from.y)
+  ctx.lineTo(from.x, from.y + height)
+  ctx.stroke()
+}
+
 function maxCellWidth(array){
+  if(array.length === 0)
+    return 0
+
   var max = array[0].length * PIXELS_PER_CHAR
   var current;
-  for( i in array){
+  for(i = 0 ; i < array.length ; i++){
     current = array[i].length * PIXELS_PER_CHAR
     if(current > max){
       max = current
