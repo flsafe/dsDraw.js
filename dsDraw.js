@@ -26,6 +26,35 @@ function drawDelete(array, index, ctx){
     ctx.translate(0, DELETE_VERT_MARGINE)
     drawArray(deletedArray, ctx, sameWidth)
   ctx.restore()
+
+  drawArrows(index, array.length, ctx)
+}
+
+function drawArrows(startIndex, arrayLength, ctx){
+ var arrowStart
+ var arrowEnd
+ for(i = startIndex ; i < arrayLength - 1 ; i++){
+  arrowStart = toBottonMiddle( nextPosition(i) )
+  arrowEnd = calcArrowEnd(arrowStart)
+  drawArrow(arrowStart, arrowEnd, ctx)
+ }
+}
+
+function toBottonMiddle(pos){
+  return {x: pos.x + (CELL_WIDTH / 2),
+          y: pos.y + ARRAY_HEIGHT}
+}
+
+function calcArrowEnd(pos){
+  return {x: pos.x - CELL_WIDTH,
+          y: pos.y + (DELETE_VERT_MARGINE - ARRAY_HEIGHT)}
+}
+
+function drawArrow(p1, p2, ctx){
+  ctx.beginPath()
+    ctx.moveTo(p1.x, p1.y)
+    ctx.lineTo(p2.x, p2.y)
+  ctx.stroke()
 }
 
 /**
