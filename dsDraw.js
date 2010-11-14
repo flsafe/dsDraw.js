@@ -4,28 +4,40 @@ var startPosition = {x: 25, y: 50}
 var FONT = 20
 var PIXELS_PER_CHAR = 20
 
+var DELETE_VERT_MARGINE = 75
+
 function draw(){  
   var canvas = document.getElementById('tutorial')
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
 
-    var array = [1,  "empty", null, 10, 2000, "\\0"]
+    var array = ['1', '2222', null, 500, 0]
     drawDelete(array, 2, ctx)
   }  
 }  
 
 function drawDelete(array, index, ctx){
+  var array = toStringArray(array)
+  var deletedArray = deleteIndex(index, array)
+  sameWidth = {cellWidth: maxCellWidth(array)}
+
   ctx.save()
-    drawArray(array, ctx)
-    ctx.translate(0, 100)
-    drawArray( deleteIndex(2, array), ctx)
+    drawArray(array, ctx, sameWidth)
+    ctx.translate(0, DELETE_VERT_MARGINE)
+    drawArray(deletedArray, ctx, sameWidth)
   ctx.restore()
 }
 
+/**
+ * Draw an array
+ * @param {Array} array The array to draw
+ * @param {Context} ctx Canvas context
+ * @param {Object} ops Drawing options {cellWidth}
+ */
 function drawArray(array, ctx, ops){
   var array = toStringArray(array)
 
-  CELL_WIDTH = getOp('cellWidth') || maxCellWidth(array)
+  CELL_WIDTH = getOp('cellWidth', ops) || maxCellWidth(array)
   var arrayWidth = CELL_WIDTH * array.length  
   
   ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, ARRAY_HEIGHT);
@@ -34,7 +46,10 @@ function drawArray(array, ctx, ops){
 }
 
 function getOp(name, ops){
-  ops && ops[name]
+  if( typeof ops === 'undefined' ){
+    return false
+  }
+  return ops[name]
 }
 
 function deleteIndex(index, array, ops){
