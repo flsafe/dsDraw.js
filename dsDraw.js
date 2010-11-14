@@ -5,24 +5,51 @@ var FONT = 20
 var PIXELS_PER_CHAR = 20
 
 function draw(){  
-  var canvas = document.getElementById('tutorial');  
+  var canvas = document.getElementById('tutorial')
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
 
-    var arr = [1,  "empty", null, 10, 20000, "\\0"]
-    drawArray(arr, ctx)
+    var array = [1,  "empty", null, 10, 2000, "\\0"]
+    drawDelete(array, 2, ctx)
   }  
 }  
 
-function drawArray(array, ctx){
+function drawDelete(array, index, ctx){
+  ctx.save()
+    drawArray(array, ctx)
+    ctx.translate(0, 100)
+    drawArray( deleteIndex(2, array), ctx)
+  ctx.restore()
+}
+
+function drawArray(array, ctx, ops){
   var array = toStringArray(array)
 
-  CELL_WIDTH = maxCellWidth(array)
+  CELL_WIDTH = getOp('cellWidth') || maxCellWidth(array)
   var arrayWidth = CELL_WIDTH * array.length  
   
   ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, ARRAY_HEIGHT);
   drawElems(array, ctx)
   drawLinesBetweenElems(array, ctx) 
+}
+
+function getOp(name, ops){
+  ops && ops[name]
+}
+
+function deleteIndex(index, array, ops){
+  var out = new Array(0)
+  for(i = 0 ; i <= array.length ; i++){
+    if( i !== index ){
+      out.push( array[i] )
+    }
+  }
+  return out.map(function (e){
+    if( typeof e === 'undefined'){
+      return getOp('undefined', ops) || '\\0'
+    }
+    return e
+  })
 }
 
 function toStringArray(array){
