@@ -12,11 +12,21 @@ function draw(){
     var ctx = canvas.getContext('2d');  
 
     var array = ['1', '2222', null, 500, 0]
-    drawDelete(array, 2, ctx)
+    drawDelete(array, 4, ctx)
   }  
 }  
 
+/**
+ * Draw a diagram that represents
+ * deleting an element in an array by shifting left.
+ * @param {Array} array The array to delete from
+ * @param {Integer} index The index that will be deleted
+ * @param {Context} ctx The canvas context
+ */
 function drawDelete(array, index, ctx){
+  if(array.length === 0 || index < 0 || index >= array.length)
+    return
+
   var array = toStringArray(array)
   var deletedArray = deleteIndex(index, array)
 
@@ -35,8 +45,6 @@ function drawStackedArrays(arr1, arr2, ctx){
 }
 
 function drawShiftArrows(startIndex, arrayLength, ctx){
- var arrowStart
- var arrowEnd
  for(i = startIndex ; i < arrayLength - 1 ; i++){
    drawShiftArrow(i, ctx)
  }
