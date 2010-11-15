@@ -11,8 +11,8 @@ function draw(){
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
 
-    var array = ['1', '2222', null, 500, 'a']
-    drawDelete(array, 4, ctx)
+    var array = ['1', '2222', null, 500, 'a', 1, 2, 3]
+    drawDelete(array, 1, ctx)
   }  
 }  
 
@@ -64,7 +64,6 @@ function drawInsertArrow(index, ctx){
 function calcInsertArrowStart(index){
   var start =  toBottonMiddle( currentPosition(index) )
   start.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT) / 2 
-
   return start 
 }
 
@@ -76,7 +75,7 @@ function calcInsertArrowEnd(index){
 
 function drawShiftArrow(i, ctx){
   var arrowStart = toBottonMiddle( nextPosition(i) )
-  var arrowEnd = calcArrowEnd(arrowStart)
+  var arrowEnd = calcShiftArrowEnd(arrowStart)
   drawArrow(arrowStart, arrowEnd, ctx)
 }
 
@@ -85,41 +84,45 @@ function toBottonMiddle(pos){
           y: pos.y + ARRAY_HEIGHT}
 }
 
-function calcArrowEnd(pos){
+function calcShiftArrowEnd(pos){
   return {x: pos.x - CELL_WIDTH,
           y: pos.y + (DELETE_VERT_MARGINE - ARRAY_HEIGHT)}
 }
 
-function drawArrow(start, end, ctx){
-  ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.lineTo(end.x, end.y)
-  ctx.stroke()
-  drawHead(start, end, ctx)
+function drawArrow(tail, point, ctx){
+  drawArrowBody(tail, point, ctx)
+  drawHead(tail, point, ctx)
 }
 
-function drawHead(start, end, ctx){
-  var diff = vectDiff(start, end)
-  var normal = vectNormalize(diff)
-  var perpArrowBase = vectNegRecipricol(normal)
-  var arrowBase = vectAdd(end, vectMult(normal, 20))
-  ctx.fillRect(arrowBase.x, arrowBase.y, 1,1); 
+function drawArrowBody(tail, point, ctx){
+  ctx.beginPath()
+    ctx.moveTo(tail.x, tail.y)
+    ctx.lineTo(point.x, point.y)
+  ctx.stroke()
+}
+
+function drawHead(tail, point, ctx){
+  var basePoints = calcArrowHeadBasePoints(tail, point)
+
+  ctx.beginPath()
+    ctx.moveTo(basePoints.p1.x, basePoints.p1.y)
+    ctx.lineTo(point.x, point.y)
+  ctx.stroke()
+
+  ctx.beginPath()
+    ctx.moveTo(basePoints.p2.x, basePoints.p2.y)
+    ctx.lineTo(point.x, point.y)
+  ctx.stroke()
+}
+
+function calcArrowHeadBasePoints(tail, point){
+  var toTail = vectNormalize( vectDiff(tail, point) )
+  var perpToArrowBody = vectNegRecipricol(toTail)
+  var arrowBaseMid = vectAdd(point, vectMult(toTail, 20))
   
-  var head1 = vectAdd(arrowBase, vectMult(perpArrowBase, 5))
-  var head2 = vectAdd(arrowBase, vectMult( vectMult(perpArrowBase, 5), -1))
-
-  ctx.fillRect(head1.x, head1.y, 1, 1)
-  ctx.fillRect(head2.x, head2.y, 1, 1)
-
-  ctx.beginPath()
-    ctx.moveTo(head1.x, head1.y)
-    ctx.lineTo(end.x, end.y)
-  ctx.stroke()
-
-  ctx.beginPath()
-    ctx.moveTo(head2.x, head2.y)
-    ctx.lineTo(end.x, end.y)
-  ctx.stroke()
+  var basePoint1 = vectAdd(arrowBaseMid, vectMult(perpToArrowBody, 5))
+  var basePoint2 = vectAdd(arrowBaseMid, vectMult( vectMult(perpToArrowBody, 5), -1))
+  return {p1: basePoint1, p2: basePoint2} 
 }
 
 function vectMult(v, m){
