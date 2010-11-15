@@ -3,18 +3,8 @@ var CELL_WIDTH
 var startPosition = {x: 25, y: 50}
 var FONT = 20
 var PIXELS_PER_CHAR = 20
-
 var DELETE_VERT_MARGINE = 75
 
-function draw(){  
-  var canvas = document.getElementById('tutorial')
-  if (canvas.getContext){  
-    var ctx = canvas.getContext('2d');  
-
-    var array = ["a", "b", "c", "d", "e", "f", "\\0"]
-    drawDelete(array, 2, ctx)
-  }  
-}  
 
 /**
  * Draw a diagram that represents
