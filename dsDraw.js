@@ -58,11 +58,49 @@ function calcArrowEnd(pos){
           y: pos.y + (DELETE_VERT_MARGINE - ARRAY_HEIGHT)}
 }
 
-function drawArrow(p1, p2, ctx){
+function drawArrow(start, end, ctx){
   ctx.beginPath()
-    ctx.moveTo(p1.x, p1.y)
-    ctx.lineTo(p2.x, p2.y)
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
   ctx.stroke()
+  drawHead(start, end, ctx)
+}
+
+function drawHead(start, end, ctx){
+  var diff = vectDiff(start, end)
+  var normal = vectNormalize(diff)
+  var perpArrowBase = vectNegRecipricol(normal)
+  var arrowBase = vectAdd(end, vectMult(normal, 50))
+  ctx.fillRect(arrowBase.x, arrowBase.y, 5,5); 
+  
+  var head1 = vectAdd(arrowBase, vectMult(perpArrowBase, 10))
+  ctx.fillRect(head1.x, head1.y, 4, 4)
+}
+
+function vectMult(v, m){
+  return {x: v.x * m,
+          y: v.y * m}
+}
+
+function vectNegRecipricol(v){
+  return {x: -1 * v.y,
+          y: 1 * v.x}
+}
+
+function vectAdd(v1, v2){
+  return {x: v1.x + v2.x,
+          y: v1.y + v2.y}
+}
+
+function vectDiff(v1, v2){
+  return {x: v1.x - v2.x,
+          y: v1.y - v2.y}
+}
+
+function vectNormalize(v){
+ var magnitude = Math.sqrt( Math.pow(v.x, 2) + Math.pow(v.y, 2) ) 
+ return {x: v.x/magnitude,
+         y: v.y/magnitude}
 }
 
 /**
