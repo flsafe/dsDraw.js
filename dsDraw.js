@@ -31,11 +31,12 @@ function drawDelete(array, index, ctx){
   var deletedArray = deleteIndex(index, array)
 
   drawStackedArrays(array, deletedArray, ctx)
-  if( index == array.length -1 ){
+  if( index == array.length - 1 ){
     drawInsertArrow(index, ctx)
   }
   else{
     drawShiftArrows(index, array.length, ctx)
+    drawInsertArrow(array.length - 1, ctx)
   }
 }
 
@@ -89,6 +90,12 @@ function calcShiftArrowEnd(pos){
           y: pos.y + (DELETE_VERT_MARGINE - ARRAY_HEIGHT)}
 }
 
+/**
+ * Draw an arrow starting from tail and
+ * the arrow head pointing to point
+ * @param {Point} tail 2D vector with x and y properties
+ * @param {Point} point 2D vector with x and y properties
+ */
 function drawArrow(tail, point, ctx){
   drawArrowBody(tail, point, ctx)
   drawHead(tail, point, ctx)
