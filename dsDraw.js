@@ -11,8 +11,8 @@ function draw(){
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
 
-    var array = ['1', '2222', null, 500, 'a', 1, 2, 3]
-    drawDelete(array, 1, ctx)
+    var array = ["a", "b", "c", "d", "e", "f", "\\0"]
+    drawDelete(array, 2, ctx)
   }  
 }  
 
