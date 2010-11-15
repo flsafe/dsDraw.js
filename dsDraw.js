@@ -11,7 +11,7 @@ function draw(){
   if (canvas.getContext){  
     var ctx = canvas.getContext('2d');  
 
-    var array = ['1', '2222', null, 500, 0]
+    var array = ['1', '2222', null, 500, 'a']
     drawDelete(array, 4, ctx)
   }  
 }  
@@ -31,12 +31,17 @@ function drawDelete(array, index, ctx){
   var deletedArray = deleteIndex(index, array)
 
   drawStackedArrays(array, deletedArray, ctx)
-  drawShiftArrows(index, array.length, ctx)
+  if( index == array.length -1 ){
+    drawInsertArrow(index, ctx)
+  }
+  else{
+    drawShiftArrows(index, array.length, ctx)
+  }
 }
 
 function drawStackedArrays(arr1, arr2, ctx){
-  width = Math.max( maxCellWidth(arr1), maxCellWidth(arr2) )
-  sameWidth = {cellWidth: width}
+  var width = Math.max( maxCellWidth(arr1), maxCellWidth(arr2) )
+  var sameWidth = {cellWidth: width}
   ctx.save()
     drawArray(arr1, ctx, sameWidth)
     ctx.translate(0, DELETE_VERT_MARGINE)
@@ -50,9 +55,28 @@ function drawShiftArrows(startIndex, arrayLength, ctx){
  }
 }
 
+function drawInsertArrow(index, ctx){
+  var arrowStart = calcInsertArrowStart(index)
+  var arrowEnd = calcInsertArrowEnd(index)
+  drawArrow(arrowStart, arrowEnd, ctx)
+}
+
+function calcInsertArrowStart(index){
+  var start =  toBottonMiddle( currentPosition(index) )
+  start.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT) / 2 
+
+  return {x: start.x, y: start.y}
+}
+
+function calcInsertArrowEnd(index){
+  var end = toBottonMiddle( currentPosition(index) )
+  end.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT)
+  return end
+}
+
 function drawShiftArrow(i, ctx){
-  arrowStart = toBottonMiddle( nextPosition(i) )
-  arrowEnd = calcArrowEnd(arrowStart)
+  var arrowStart = toBottonMiddle( nextPosition(i) )
+  var arrowEnd = calcArrowEnd(arrowStart)
   drawArrow(arrowStart, arrowEnd, ctx)
 }
 
@@ -199,6 +223,11 @@ function drawElems(array, ctx){
     ctx.fillText( array[i], currPos.x, currPos.y, CELL_WIDTH )
     currPos = toMiddleOfCell( nextPosition(i) ) 
   }
+}
+
+function currentPosition(iteration){
+  return {x: startPosition.x + CELL_WIDTH * (iteration),
+          y: startPosition.y}
 }
 
 function nextPosition(iteration){
