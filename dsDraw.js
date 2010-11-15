@@ -65,7 +65,7 @@ function calcInsertArrowStart(index){
   var start =  toBottonMiddle( currentPosition(index) )
   start.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT) / 2 
 
-  return {x: start.x, y: start.y}
+  return start 
 }
 
 function calcInsertArrowEnd(index){
