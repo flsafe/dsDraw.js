@@ -70,11 +70,24 @@ function drawHead(start, end, ctx){
   var diff = vectDiff(start, end)
   var normal = vectNormalize(diff)
   var perpArrowBase = vectNegRecipricol(normal)
-  var arrowBase = vectAdd(end, vectMult(normal, 50))
-  ctx.fillRect(arrowBase.x, arrowBase.y, 5,5); 
+  var arrowBase = vectAdd(end, vectMult(normal, 20))
+  ctx.fillRect(arrowBase.x, arrowBase.y, 1,1); 
   
-  var head1 = vectAdd(arrowBase, vectMult(perpArrowBase, 10))
-  ctx.fillRect(head1.x, head1.y, 4, 4)
+  var head1 = vectAdd(arrowBase, vectMult(perpArrowBase, 5))
+  var head2 = vectAdd(arrowBase, vectMult( vectMult(perpArrowBase, 5), -1))
+
+  ctx.fillRect(head1.x, head1.y, 1, 1)
+  ctx.fillRect(head2.x, head2.y, 1, 1)
+
+  ctx.beginPath()
+    ctx.moveTo(head1.x, head1.y)
+    ctx.lineTo(end.x, end.y)
+  ctx.stroke()
+
+  ctx.beginPath()
+    ctx.moveTo(head2.x, head2.y)
+    ctx.lineTo(end.x, end.y)
+  ctx.stroke()
 }
 
 function vectMult(v, m){
