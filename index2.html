@@ -18,7 +18,7 @@
           var ctx = canvas.getContext('2d');  
           
           ctx.save()
-            var array = ["a", "frank", "\\0", 100, null, 20000]
+            var array = ["a", "b", "c", "d", "\\0"]
             drawer = arrayDrawer({})
             drawer.draw(array, ctx)
 
@@ -27,7 +27,7 @@
 
             ctx.translate(0, 300)
 
-            arrowStipple = arrowStippleDrawer()
+            arrowStipple = arrowStippleDrawer({arrowHeight: -40})
             arrowStipple.draw(10, ctx)
 
           ctx.restore()

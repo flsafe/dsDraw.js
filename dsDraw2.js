@@ -80,7 +80,7 @@ var arrayDrawer = function(spec){
 
    for(i = 0 ; i < numLines ; i++){
     currPos = nextPosition(i)
-    drawer.drawDownStroke(currPos, arrayHeight, context)
+    drawer.drawVertStroke(currPos, arrayHeight, context)
    }
   }
 
@@ -133,11 +133,11 @@ var lineDrawer = function(spec){
   }
   that.draw = draw 
 
-  var drawDownStroke = function(start, strokeHeight, ctx){
+  var drawVertStroke = function(start, strokeHeight, ctx){
     var to = {x:start.x, y:start.y + strokeHeight} 
     draw(start, to, ctx)
   }
-  that.drawDownStroke = drawDownStroke
+  that.drawVertStroke = drawVertStroke
 
   return that
 }
@@ -209,24 +209,31 @@ var arrowStippleDrawer = function(spec){
   var arrow 
   var arrowHeight = 30
   var spaceBetween = 30
+  var arrowHeadOffset = 0 
   initialize()
 
   function initialize(){
+    arrow = arrowDrawer(spec)
     arrowHeight = spec.arrowHeight || arrowHeight
     spaceBetween = spec.spaceBetween || spaceBetween
-    arrow = arrowDrawer(spec)
+    arrowHeadOffset = spec.arrowHeadOffset || arrowHeadOffset
   }
 
   var draw= function(count, ctx){
     ctx.save()
-      var curr = dsDraw.startPosition
+      var arrowTail = dsDraw.startPosition
        for(i = 0 ; i < count ; i++){
-        arrow.draw(curr, {x: curr.x, y: curr.y + arrowHeight}, ctx)
+        arrowHead = applyOffset( {x: arrowTail.x, y: arrowTail.y + arrowHeight} )
+        arrow.draw(arrowTail, arrowHead, ctx)
         ctx.translate(spaceBetween, 0); 
        }
     ctx.restore()
   }
   that.draw= draw
+
+  function applyOffset(p){
+    return {x: p.x + arrowHeadOffset, y: p.y}
+  }
   
   return that
 }
