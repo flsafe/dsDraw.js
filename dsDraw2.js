@@ -14,7 +14,6 @@ var arrayDrawer = function(spec){
   var pixelsPerChar = 20 
   var fontSize = 20
 
-
   var draw = function(array, ctx){
     initialize(array, ctx) 
     
@@ -114,7 +113,11 @@ var arrayDrawer = function(spec){
 
 
 var lineDrawer = function(spec){
+  spec = spec || {}
   var that = {}
+
+  initialize()
+  function initialize(){}
   
   var draw = function(from, to, ctx){
     ctx.save()
@@ -154,13 +157,6 @@ var arrowDrawer = function(spec){
     ctx.restore()
   } 
   that.draw = draw 
-
-  var drawStiple = function(space, count, ctx){
-    ctx.save()
-     return 0
-   ctx.restore()
-  }
-  that.drawStiple = drawStiple
 
   function initialize(tail, point, ctx){
     arrow.head = {}
@@ -202,6 +198,34 @@ var arrowDrawer = function(spec){
  return that 
 }
 
+var arrowStippleDrawer = function(spec){
+  spec = spec || {}
+  var that = {}
+
+  var arrowHeight = 30
+  var spaceBetween = 30
+  var arrow 
+  initialize()
+
+  function initialize(){
+    arrowHeight = spec.arrowHeight || arrowHeight
+    spaceBetween = spec.spaceBetween || spaceBetween
+    arrow = arrowDrawer(spec)
+  }
+
+  var draw= function(count, ctx){
+    ctx.save()
+      var curr = dsDraw.startPosition
+       for(i = 0 ; i < count ; i++){
+        arrow.draw(curr, {x: curr.x, y: curr.y + arrowHeight}, ctx)
+        ctx.translate(spaceBetween, 0); 
+       }
+    ctx.restore()
+  }
+  that.draw= draw
+  
+  return that
+}
 
 var Vect = {
   mult: function(v, m){

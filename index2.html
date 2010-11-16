@@ -24,6 +24,12 @@
 
             arrow = arrowDrawer({})
             arrow.draw({x: 100, y: 100}, {x: 200, y: 200}, ctx)
+
+            ctx.translate(0, 300)
+
+            arrowStipple = arrowStippleDrawer()
+            arrowStipple.draw(10, ctx)
+
           ctx.restore()
         }  
       }  
