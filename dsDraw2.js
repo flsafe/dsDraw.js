@@ -2,6 +2,9 @@
 arrayDrawer = function(spec){
   var that = {}
 
+  var subject
+  var context 
+
   var cellWidth
   var arrayHeight = 30
   var pixelsPerChar = 20 
@@ -10,19 +13,26 @@ arrayDrawer = function(spec){
   var startPosition = {x: 25, y: 25}
 
   var drawArray = function(array, ctx){
-    var array = toStringArray(array)
+    initialize(spec, array, ctx) 
+    
+    var arrayWidth = cellWidth * array.length  
+    ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, arrayHeight);
+    drawElems()
+    drawLinesBetweenElems() 
+  }
+  that.drawArray = drawArray
+
+  function initialize(spec, array, ctx){
+    spec = spec || {}
+
+    subject = toStringArray(array)
+    context = ctx 
 
     cellWidth = spec.cellWidth || maxCellWidth(array)
     arrayHeight = spec.arrayHeight || arrayHeight
     pixelsPerChar = spec.pixelsPerChar || pixelsPerChar
     fontSize = spec.fontSize || fontSize
-    
-    var arrayWidth = cellWidth * array.length  
-    ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, arrayHeight);
-    drawElems(array, ctx)
-    drawLinesBetweenElems(array, ctx) 
   }
-  that.drawArray = drawArray
 
   function toStringArray(array){
     var out = new Array(array.length)
@@ -33,14 +43,14 @@ arrayDrawer = function(spec){
     return out
    }
 
-  function maxCellWidth(array){
-    if(array.length === 0)
+  function maxCellWidth(){
+    if(subject.length === 0)
       return 0
 
-    var max = array[0].length * pixelsPerChar 
+    var max = subject[0].length * pixelsPerChar 
     var current;
-    for(i = 0 ; i < array.length ; i++){
-      current = array[i].length * pixelsPerChar 
+    for(i = 0 ; i < subject.length ; i++){
+      current = subject[i].length * pixelsPerChar 
       if(current > max){
         max = current
       }
@@ -48,24 +58,24 @@ arrayDrawer = function(spec){
     return max
   }
 
-  function drawElems(array, ctx){
-    ctx.font = fontSize + "px monospace"
-    ctx.textAlign = "center"
+  function drawElems(){
+    context.font = fontSize + "px monospace"
+    context.textAlign = "center"
 
     var currPos = toMiddleOfCell(startPosition)
-    for( i = 0 ; i < array.length ; i++){
-      ctx.fillText( array[i], currPos.x, currPos.y, cellWidth)
+    for( i = 0 ; i < subject.length ; i++){
+      context.fillText( subject[i], currPos.x, currPos.y, cellWidth)
       currPos = toMiddleOfCell( nextPosition(i) ) 
     }
   }
 
-  function drawLinesBetweenElems(array ,ctx){
-   var numLines = array.length - 1
+  function drawLinesBetweenElems(){
+   var numLines = subject.length - 1
    var drawer = lineDrawer({})
 
    for(i = 0 ; i < numLines ; i++){
     currPos = nextPosition(i)
-    drawer.drawDownStroke(currPos, arrayHeight, ctx)
+    drawer.drawDownStroke(currPos, arrayHeight, context)
    }
   }
 
