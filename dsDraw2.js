@@ -29,11 +29,30 @@ var arrayDrawer = function(spec){
   function initialize(array, ctx){
     subject = toStringArray(array)
     context = ctx 
-    cellWidth = spec.cellWidth || maxCellWidth()
-    arrayHeight = spec.arrayHeight || arrayHeight
     pixelsPerChar = spec.pixelsPerChar || pixelsPerChar
+    cellWidth = spec.cellWidth || cellWidth(subject, pixelsPerChar)
+    arrayHeight = spec.arrayHeight || arrayHeight
     fontSize = spec.fontSize || fontSize
   }
+
+  var cellWidth= function(array, ppChar){
+    if(array.length === 0)
+      return 0
+
+    ppChar = ppChar || pixelsPerChar
+
+    array = toStringArray(array)
+    var max = array[0].length * ppChar 
+    var current;
+    for(i = 0 ; i < array.length ; i++){
+      current = array[i].length * ppChar 
+      if(current > max){
+        max = current
+      }
+    }
+    return max
+  }
+  that.cellWidth = cellWidth
 
   function toStringArray(array){
     var out = new Array(array.length)
@@ -43,21 +62,6 @@ var arrayDrawer = function(spec){
     }
     return out
    }
-
-  function maxCellWidth(){
-    if(subject.length === 0)
-      return 0
-
-    var max = subject[0].length * pixelsPerChar 
-    var current;
-    for(i = 0 ; i < subject.length ; i++){
-      current = subject[i].length * pixelsPerChar 
-      if(current > max){
-        max = current
-      }
-    }
-    return max
-  }
 
   function drawElems(){
     context.font = fontSize + "px monospace"
