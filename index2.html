@@ -1,0 +1,35 @@
+
+<html>  
+
+  <head>  
+    <title>dsDraw</title> 
+
+    <style type="text/css">  
+      canvas { border: 1px solid black; }  
+    </style> 
+
+    <script type="text/javascript" src="dsDraw2.js"></script>
+
+    <script type="text/javascript">
+      
+      function draw(){  
+        var canvas = document.getElementById('tutorial')
+        if (canvas.getContext){  
+          var ctx = canvas.getContext('2d');  
+          
+          ctx.save()
+            var array = ["a", "frank", "\\0", 100, null, 20000]
+            drawer = arrayDrawer({})
+            drawer.drawArray(array, ctx)
+          ctx.restore()
+        }  
+      }  
+    </script>
+
+  </head>  
+
+  <body onload="draw();">  
+    <canvas id="tutorial" width="800" height="600"></canvas>  
+  </body>  
+</html>  
+
