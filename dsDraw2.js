@@ -29,7 +29,7 @@ var arrayDrawer = function(spec){
   function initialize(array, ctx){
     subject = toStringArray(array)
     context = ctx 
-    cellWidth = spec.cellWidth || maxCellWidth(array)
+    cellWidth = spec.cellWidth || maxCellWidth()
     arrayHeight = spec.arrayHeight || arrayHeight
     pixelsPerChar = spec.pixelsPerChar || pixelsPerChar
     fontSize = spec.fontSize || fontSize
