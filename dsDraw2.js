@@ -1,7 +1,11 @@
+var dsDraw = {
+  startPosition: {x: 25, y: 25}
+}
 
 var arrayDrawer = function(spec){
   spec = spec || {}
   var that = {}
+  var startPosition = dsDraw.startPosition
 
   var subject
   var context 
@@ -10,7 +14,6 @@ var arrayDrawer = function(spec){
   var pixelsPerChar = 20 
   var fontSize = 20
 
-  var startPosition = {x: 25, y: 25}
 
   var draw = function(array, ctx){
     initialize(array, ctx) 
@@ -151,6 +154,13 @@ var arrowDrawer = function(spec){
     ctx.restore()
   } 
   that.draw = draw 
+
+  var drawStiple = function(space, count, ctx){
+    ctx.save()
+     return 0
+   ctx.restore()
+  }
+  that.drawStiple = drawStiple
 
   function initialize(tail, point, ctx){
     arrow.head = {}
