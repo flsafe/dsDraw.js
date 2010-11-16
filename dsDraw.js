@@ -1,271 +1,268 @@
-var ARRAY_HEIGHT = 30
-var CELL_WIDTH
-var startPosition = {x: 25, y: 50}
-var FONT = 20
-var PIXELS_PER_CHAR = 20
-var DELETE_VERT_MARGINE = 75
+var dsDraw = {
+  startPosition: {x: 25, y: 25}
+}
 
+var arrayDrawer = function(spec){
+  spec = spec || {}
+  var that = {}
 
-/**
- * Draw a diagram that represents
- * deleting an element in an array by shifting left.
- * @param {Array} array The array to delete from
- * @param {Integer} index The index that will be deleted
- * @param {Context} ctx The canvas context
- */
-function drawDelete(array, index, ctx){
-  if(array.length === 0 || index < 0 || index >= array.length)
-    return
+  var subject
+  var context 
+  var cellWidth
+  var startPosition = dsDraw.startPosition
+  var arrayHeight = 30
+  var pixelsPerChar = 20 
+  var fontSize = 20
 
-  var array = toStringArray(array)
-  var deletedArray = deleteIndex(index, array)
-
-  drawStackedArrays(array, deletedArray, ctx)
-  if( index == array.length - 1 ){
-    drawInsertArrow(index, ctx)
+  var draw = function(array, ctx){
+    initialize(array, ctx) 
+    
+    ctx.save()
+      var arrayWidth = cellWidth * array.length  
+      ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, arrayHeight);
+      drawElems()
+      drawLinesBetweenElems() 
+    ctx.restore()
   }
-  else{
-    drawShiftArrows(index, array.length, ctx)
-    drawInsertArrow(array.length - 1, ctx)
+  that.draw = draw 
+
+  function initialize(array, ctx){
+    subject = toStringArray(array)
+    context = ctx 
+    pixelsPerChar = spec.pixelsPerChar || pixelsPerChar
+    cellWidth = spec.cellWidth || arrayCellWidth(subject, pixelsPerChar)
+    arrayHeight = spec.arrayHeight || arrayHeight
+    fontSize = spec.fontSize || fontSize
   }
-}
 
-function drawStackedArrays(arr1, arr2, ctx){
-  var width = Math.max( maxCellWidth(arr1), maxCellWidth(arr2) )
-  var sameWidth = {cellWidth: width}
-  ctx.save()
-    drawArray(arr1, ctx, sameWidth)
-    ctx.translate(0, DELETE_VERT_MARGINE)
-    drawArray(arr2, ctx, sameWidth)
-  ctx.restore()
-}
+  var arrayCellWidth= function(array, ppChar){
+    if(array.length === 0)
+      return 0
 
-function drawShiftArrows(startIndex, arrayLength, ctx){
- for(i = startIndex ; i < arrayLength - 1 ; i++){
-   drawShiftArrow(i, ctx)
- }
-}
+    ppChar = ppChar || pixelsPerChar
 
-function drawInsertArrow(index, ctx){
-  var arrowStart = calcInsertArrowStart(index)
-  var arrowEnd = calcInsertArrowEnd(index)
-  drawArrow(arrowStart, arrowEnd, ctx)
-}
+    array = toStringArray(array)
+    var max = array[0].length * ppChar 
+    var current;
+    for(i = 0 ; i < array.length ; i++){
+      current = array[i].length * ppChar 
+      if(current > max){
+        max = current
+      }
+    }
+    return max
+  }
+  that.arrayCellWidth = arrayCellWidth
 
-function calcInsertArrowStart(index){
-  var start =  toBottonMiddle( currentPosition(index) )
-  start.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT) / 2 
-  return start 
-}
+  function toStringArray(array){
+    var out = new Array(array.length)
 
-function calcInsertArrowEnd(index){
-  var end = toBottonMiddle( currentPosition(index) )
-  end.y += (DELETE_VERT_MARGINE - ARRAY_HEIGHT)
-  return end
-}
+    for( i = 0 ; i < array.length ; i++){
+      out[i] = elementToString( array[i] )
+    }
+    return out
+   }
 
-function drawShiftArrow(i, ctx){
-  var arrowStart = toBottonMiddle( nextPosition(i) )
-  var arrowEnd = calcShiftArrowEnd(arrowStart)
-  drawArrow(arrowStart, arrowEnd, ctx)
-}
+  function drawElems(){
+    context.font = fontSize + "px monospace"
+    context.textAlign = "center"
 
-function toBottonMiddle(pos){
-  return {x: pos.x + (CELL_WIDTH / 2),
-          y: pos.y + ARRAY_HEIGHT}
-}
+    var currPos = toMiddleOfCell(startPosition)
+    for( i = 0 ; i < subject.length ; i++){
+      context.fillText( subject[i], currPos.x, currPos.y, cellWidth)
+      currPos = toMiddleOfCell( nextPosition(i) ) 
+    }
+  }
 
-function calcShiftArrowEnd(pos){
-  return {x: pos.x - CELL_WIDTH,
-          y: pos.y + (DELETE_VERT_MARGINE - ARRAY_HEIGHT)}
-}
+  function drawLinesBetweenElems(){
+   var numLines = subject.length - 1
+   var drawer = lineDrawer({})
 
-/**
- * Draw an arrow starting from tail and
- * the arrow head pointing to point
- * @param {Point} tail 2D vector with x and y properties
- * @param {Point} point 2D vector with x and y properties
- */
-function drawArrow(tail, point, ctx){
-  drawArrowBody(tail, point, ctx)
-  drawHead(tail, point, ctx)
-}
+   for(i = 0 ; i < numLines ; i++){
+    currPos = nextPosition(i)
+    drawer.drawVertStroke(currPos, arrayHeight, context)
+   }
+  }
 
-function drawArrowBody(tail, point, ctx){
-  ctx.beginPath()
-    ctx.moveTo(tail.x, tail.y)
-    ctx.lineTo(point.x, point.y)
-  ctx.stroke()
-}
+  function elementToString(element){
+    if( typeof element === 'number' ){
+      return element + ""
+    }
+    else if ( element === null ){
+      return "null" 
+    }
+    else if( typeof element === 'object' || typeof element === 'boolean'){
+      return element.toString()
+    }
+    else if( typeof element == 'string' ){
+      return element
+    }
+    else {
+      return typeof element 
+    }
+  }
 
-function drawHead(tail, point, ctx){
-  var basePoints = calcArrowHeadBasePoints(tail, point)
-
-  ctx.beginPath()
-    ctx.moveTo(basePoints.p1.x, basePoints.p1.y)
-    ctx.lineTo(point.x, point.y)
-  ctx.stroke()
-
-  ctx.beginPath()
-    ctx.moveTo(basePoints.p2.x, basePoints.p2.y)
-    ctx.lineTo(point.x, point.y)
-  ctx.stroke()
-}
-
-function calcArrowHeadBasePoints(tail, point){
-  var toTail = vectNormalize( vectDiff(tail, point) )
-  var perpToArrowBody = vectNegRecipricol(toTail)
-  var arrowBaseMid = vectAdd(point, vectMult(toTail, 20))
+  function nextPosition(iteration){
+    return {x: startPosition.x + cellWidth * (iteration + 1),
+            y: startPosition.y}
+  }
   
-  var basePoint1 = vectAdd(arrowBaseMid, vectMult(perpToArrowBody, 5))
-  var basePoint2 = vectAdd(arrowBaseMid, vectMult( vectMult(perpToArrowBody, 5), -1))
-  return {p1: basePoint1, p2: basePoint2} 
+  function toMiddleOfCell(point){
+    return {x: point.x + cellWidth / 2,
+            y: point.y + (arrayHeight / 2) + fontSize / 2}
+  }
+
+  return that
 }
 
-function vectMult(v, m){
-  return {x: v.x * m,
-          y: v.y * m}
-}
 
-function vectNegRecipricol(v){
-  return {x: -1 * v.y,
-          y: 1 * v.x}
-}
+var lineDrawer = function(spec){
+  spec = spec || {}
+  var that = {}
 
-function vectAdd(v1, v2){
-  return {x: v1.x + v2.x,
-          y: v1.y + v2.y}
-}
-
-function vectDiff(v1, v2){
-  return {x: v1.x - v2.x,
-          y: v1.y - v2.y}
-}
-
-function vectNormalize(v){
- var magnitude = Math.sqrt( Math.pow(v.x, 2) + Math.pow(v.y, 2) ) 
- return {x: v.x/magnitude,
-         y: v.y/magnitude}
-}
-
-/**
- * Draw an array
- * @param {Array} array The array to draw
- * @param {Context} ctx Canvas context
- * @param {Object} ops Drawing options {cellWidth}
- */
-function drawArray(array, ctx, ops){
-  var array = toStringArray(array)
-
-  CELL_WIDTH = getOp('cellWidth', ops) || maxCellWidth(array)
-  var arrayWidth = CELL_WIDTH * array.length  
+  initialize()
+  function initialize(){}
   
-  ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, ARRAY_HEIGHT);
-  drawElems(array, ctx)
-  drawLinesBetweenElems(array, ctx) 
+  var draw = function(from, to, ctx){
+    ctx.save()
+      ctx.beginPath()
+        ctx.moveTo(from.x, from.y)
+        ctx.lineTo(to.x, to.y)
+      ctx.stroke()
+    ctx.restore()
+  }
+  that.draw = draw 
+
+  var drawVertStroke = function(start, strokeHeight, ctx){
+    var to = {x:start.x, y:start.y + strokeHeight} 
+    draw(start, to, ctx)
+  }
+  that.drawVertStroke = drawVertStroke
+
+  return that
 }
 
-function getOp(name, ops){
-  if( typeof ops === 'undefined' ){
-    return false
+
+var arrowDrawer = function(spec){
+  spec = spec || {}
+  var that = {}
+
+  var context
+  var arrow = {}
+  var arrowHeadLength = 20
+  var arrowHeadBase = 5
+
+  var draw = function(tail, point, ctx){
+    initialize(tail, point, ctx)
+  
+    ctx.save()
+      drawArrowBody()
+      drawHead()
+    ctx.restore()
+  } 
+  that.draw = draw 
+
+  function initialize(tail, point, ctx){
+    arrow.head = {}
+    arrow.tail = {}
+
+    context = ctx
+    arrow.head.x = point.x
+    arrow.head.y = point.y
+    arrow.tail.x = tail.x
+    arrow.tail.y = tail.y
+
+    arrowHeadLength = spec.arrowHeadLength || arrowHeadLength
+    arrowHeadBase = spec.arrowHeadBase || arrowHeadBase
   }
-  return ops[name]
+
+  function drawArrowBody(){
+    var line = lineDrawer({})
+    line.draw(arrow.tail, arrow.head, context)
+  }
+
+  function drawHead(){
+    var line = lineDrawer()
+    var basePoints = calcArrowHeadBasePoints()
+
+    line.draw(basePoints.p1, arrow.head, context)
+    line.draw(basePoints.p2, arrow.head, context)
+  }
+
+  function calcArrowHeadBasePoints(){
+    var toTail = Vect.normalize( Vect.diff(arrow.tail, arrow.head) )
+    var perpToArrowBody = Vect.negRecipricol(toTail)
+    var arrowBaseMid = Vect.add(arrow.head, Vect.mult(toTail, 20))
+    
+    var basePoint1 = Vect.add(arrowBaseMid, Vect.mult(perpToArrowBody, 5))
+    var basePoint2 = Vect.add(arrowBaseMid, Vect.mult( Vect.mult(perpToArrowBody, 5), -1))
+    return {p1: basePoint1, p2: basePoint2} 
+  }
+
+ return that 
 }
 
-function deleteIndex(index, array, ops){
-  var out = new Array(0)
-  for(i = 0 ; i <= array.length ; i++){
-    if( i !== index ){
-      out.push( array[i] )
-    }
+var arrowStippleDrawer = function(spec){
+  spec = spec || {}
+  var that = {}
+
+  var arrow 
+  var arrowHeight = 30
+  var spaceBetween = 30
+  var arrowHeadOffset = 0 
+  initialize()
+
+  function initialize(){
+    arrow = arrowDrawer(spec)
+    arrowHeight = spec.arrowHeight || arrowHeight
+    spaceBetween = spec.spaceBetween || spaceBetween
+    arrowHeadOffset = spec.arrowHeadOffset || arrowHeadOffset
   }
-  return out.map(function (e){
-    if( typeof e === 'undefined'){
-      return getOp('undefined', ops) || '\\0'
-    }
-    return e
-  })
+
+  var draw= function(count, ctx){
+    ctx.save()
+      var arrowTail = dsDraw.startPosition
+       for(i = 0 ; i < count ; i++){
+        arrowHead = applyOffset( {x: arrowTail.x, 
+                                  y: arrowTail.y + arrowHeight} )
+        arrow.draw(arrowTail, arrowHead, ctx)
+        ctx.translate(spaceBetween, 0); 
+       }
+    ctx.restore()
+  }
+  that.draw= draw
+
+  function applyOffset(p){
+    return {x: p.x + arrowHeadOffset, y: p.y}
+  }
+  
+  return that
 }
 
-function toStringArray(array){
-  var out = new Array(array.length)
+var Vect = {
+  mult: function(v, m){
+          return {x: v.x * m,
+                  y: v.y * m}
+         },
 
-  for( i = 0 ; i < array.length ; i++){
-    out[i] = elementToString( array[i] )
-  }
-  return out
- }
+  negRecipricol: function(v){
+                  return {x: -1 * v.y,
+                          y: 1 * v.x}
+                 },
+  
+  add: function(v1, v2){
+        return {x: v1.x + v2.x,
+                y: v1.y + v2.y}
+       },
 
-function elementToString(element){
-  if( typeof element === 'number' ){
-    return element + ""
-  }
-  else if ( element === null ){
-    return "null" 
-  }
-  else if( typeof element === 'object' || typeof element === 'boolean'){
-    return element.toString()
-  }
-  else if( typeof element == 'string' ){
-    return element
-  }
-  else {
-    return typeof element 
-  }
-}
+  diff: function(v1, v2){
+          return {x: v1.x - v2.x,
+                  y: v1.y - v2.y}
+        },
 
-function drawElems(array, ctx){
-  ctx.font = FONT + "px monospace"
-  ctx.textAlign = "center"
-
-  var currPos = toMiddleOfCell(startPosition)
-  for( i = 0 ; i < array.length ; i++){
-    ctx.fillText( array[i], currPos.x, currPos.y, CELL_WIDTH )
-    currPos = toMiddleOfCell( nextPosition(i) ) 
-  }
-}
-
-function currentPosition(iteration){
-  return {x: startPosition.x + CELL_WIDTH * (iteration),
-          y: startPosition.y}
-}
-
-function nextPosition(iteration){
-  return {x: startPosition.x + CELL_WIDTH * (iteration + 1),
-          y: startPosition.y}
-}
-
-function toMiddleOfCell(point){
-  return {x: point.x + CELL_WIDTH / 2,
-          y: point.y + (ARRAY_HEIGHT / 2) + FONT / 2}
-}
-
-function drawLinesBetweenElems(array ,ctx){
- var numLines = array.length - 1
- for(i = 0 ; i < numLines ; i++){
-  currPos = nextPosition(i)
-  drawLine(currPos, ARRAY_HEIGHT, ctx)
- }
-}
-
-function drawLine(from, height, ctx){
-  ctx.beginPath()
-  ctx.moveTo(from.x, from.y)
-  ctx.lineTo(from.x, from.y + height)
-  ctx.stroke()
-}
-
-function maxCellWidth(array){
-  if(array.length === 0)
-    return 0
-
-  var max = array[0].length * PIXELS_PER_CHAR
-  var current;
-  for(i = 0 ; i < array.length ; i++){
-    current = array[i].length * PIXELS_PER_CHAR
-    if(current > max){
-      max = current
-    }
-  }
-  return max
+  normalize: function(v){
+             var magnitude = Math.sqrt( Math.pow(v.x, 2) + Math.pow(v.y, 2) ) 
+             return {x: v.x/magnitude,
+                     y: v.y/magnitude}
+            }
 }

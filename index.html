@@ -1,3 +1,4 @@
+
 <html>  
 
   <head>  
@@ -7,7 +8,7 @@
       canvas { border: 1px solid black; }  
     </style> 
 
-    <script type="text/javascript" src="dsDraw.js"></script>
+    <script type="text/javascript" src="dsDraw2.js"></script>
 
     <script type="text/javascript">
       
@@ -18,12 +19,12 @@
           
           ctx.save()
             var array = ["a", "b", "c", "d", "e", "f", "\\0"]
-            drawDelete(array, 2, ctx)
-          
-            ctx.translate(0, 150)
+            drawer = arrayDrawer()
+            drawer.draw(array, ctx)
 
-            var array2 = ["an apple", 1, 100, null]
-            drawArray(array2, ctx)
+            ctx.translate(0, 75)
+            drawer = arrayDrawer({cellWidth: drawer.arrayCellWidth(array)})
+            drawer.draw(['a', 'b', '', '', '', '', ''], ctx)
           ctx.restore()
         }  
       }  
