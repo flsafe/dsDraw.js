@@ -5,11 +5,11 @@ var dsDraw = {
 var arrayDrawer = function(spec){
   spec = spec || {}
   var that = {}
-  var startPosition = dsDraw.startPosition
 
   var subject
   var context 
   var cellWidth
+  var startPosition = dsDraw.startPosition
   var arrayHeight = 30
   var pixelsPerChar = 20 
   var fontSize = 20
@@ -202,9 +202,9 @@ var arrowStippleDrawer = function(spec){
   spec = spec || {}
   var that = {}
 
+  var arrow 
   var arrowHeight = 30
   var spaceBetween = 30
-  var arrow 
   initialize()
 
   function initialize(){
