@@ -1,10 +1,10 @@
 
 var arrayDrawer = function(spec){
+  spec = spec || {}
   var that = {}
 
   var subject
   var context 
-
   var cellWidth
   var arrayHeight = 30
   var pixelsPerChar = 20 
@@ -13,21 +13,20 @@ var arrayDrawer = function(spec){
   var startPosition = {x: 25, y: 25}
 
   var draw = function(array, ctx){
-    initialize(spec, array, ctx) 
+    initialize(array, ctx) 
     
-    var arrayWidth = cellWidth * array.length  
-    ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, arrayHeight);
-    drawElems()
-    drawLinesBetweenElems() 
+    ctx.save()
+      var arrayWidth = cellWidth * array.length  
+      ctx.strokeRect(startPosition.x, startPosition.y, arrayWidth, arrayHeight);
+      drawElems()
+      drawLinesBetweenElems() 
+    ctx.restore()
   }
   that.draw = draw 
 
-  function initialize(spec, array, ctx){
-    spec = spec || {}
-
+  function initialize(array, ctx){
     subject = toStringArray(array)
     context = ctx 
-
     cellWidth = spec.cellWidth || maxCellWidth(array)
     arrayHeight = spec.arrayHeight || arrayHeight
     pixelsPerChar = spec.pixelsPerChar || pixelsPerChar
@@ -115,10 +114,12 @@ var lineDrawer = function(spec){
   var that = {}
   
   var draw = function(from, to, ctx){
-    ctx.beginPath()
-    ctx.moveTo(from.x, from.y)
-    ctx.lineTo(to.x, to.y)
-    ctx.stroke()
+    ctx.save()
+      ctx.beginPath()
+        ctx.moveTo(from.x, from.y)
+        ctx.lineTo(to.x, to.y)
+      ctx.stroke()
+    ctx.restore()
   }
   that.draw = draw 
 
@@ -133,28 +134,36 @@ var lineDrawer = function(spec){
 
 
 var arrowDrawer = function(spec){
+  spec = spec || {}
   var that = {}
 
   var context
   var arrow = {}
+  var arrowHeadLength = 20
+  var arrowHeadBase = 5
 
   var draw = function(tail, point, ctx){
     initialize(tail, point, ctx)
-
-    drawArrowBody()
-    drawHead()
+  
+    ctx.save()
+      drawArrowBody()
+      drawHead()
+    ctx.restore()
   } 
   that.draw = draw 
 
   function initialize(tail, point, ctx){
     arrow.head = {}
     arrow.tail = {}
+
+    context = ctx
     arrow.head.x = point.x
     arrow.head.y = point.y
     arrow.tail.x = tail.x
     arrow.tail.y = tail.y
 
-    context = ctx
+    arrowHeadLength = spec.arrowHeadLength || arrowHeadLength
+    arrowHeadBase = spec.arrowHeadBase || arrowHeadBase
   }
 
   function drawArrowBody(){
