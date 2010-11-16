@@ -1,5 +1,5 @@
 
-arrayDrawer = function(spec){
+var arrayDrawer = function(spec){
   var that = {}
 
   var subject
@@ -12,7 +12,7 @@ arrayDrawer = function(spec){
 
   var startPosition = {x: 25, y: 25}
 
-  var drawArray = function(array, ctx){
+  var draw = function(array, ctx){
     initialize(spec, array, ctx) 
     
     var arrayWidth = cellWidth * array.length  
@@ -20,7 +20,7 @@ arrayDrawer = function(spec){
     drawElems()
     drawLinesBetweenElems() 
   }
-  that.drawArray = drawArray
+  that.draw = draw 
 
   function initialize(spec, array, ctx){
     spec = spec || {}
@@ -111,22 +111,103 @@ arrayDrawer = function(spec){
 }
 
 
-lineDrawer = function(spec){
+var lineDrawer = function(spec){
   var that = {}
   
-  var drawLine = function(from, to, ctx){
+  var draw = function(from, to, ctx){
     ctx.beginPath()
     ctx.moveTo(from.x, from.y)
     ctx.lineTo(to.x, to.y)
     ctx.stroke()
   }
-  that.drawLine = drawLine
+  that.draw = draw 
 
   var drawDownStroke = function(start, strokeHeight, ctx){
     var to = {x:start.x, y:start.y + strokeHeight} 
-    drawLine(start, to, ctx)
+    draw(start, to, ctx)
   }
   that.drawDownStroke = drawDownStroke
 
   return that
+}
+
+
+var arrowDrawer = function(spec){
+  var that = {}
+
+  var context
+  var arrow = {}
+
+  var draw = function(tail, point, ctx){
+    initialize(tail, point, ctx)
+
+    drawArrowBody()
+    drawHead()
+  } 
+  that.draw = draw 
+
+  function initialize(tail, point, ctx){
+    arrow.head = {}
+    arrow.tail = {}
+    arrow.head.x = point.x
+    arrow.head.y = point.y
+    arrow.tail.x = tail.x
+    arrow.tail.y = tail.y
+
+    context = ctx
+  }
+
+  function drawArrowBody(){
+    var line = lineDrawer({})
+    line.draw(arrow.tail, arrow.head, context)
+  }
+
+  function drawHead(){
+    var line = lineDrawer()
+    var basePoints = calcArrowHeadBasePoints()
+
+    line.draw(basePoints.p1, arrow.head, context)
+    line.draw(basePoints.p2, arrow.head, context)
+  }
+
+  function calcArrowHeadBasePoints(){
+    var toTail = Vect.normalize( Vect.diff(arrow.tail, arrow.head) )
+    var perpToArrowBody = Vect.negRecipricol(toTail)
+    var arrowBaseMid = Vect.add(arrow.head, Vect.mult(toTail, 20))
+    
+    var basePoint1 = Vect.add(arrowBaseMid, Vect.mult(perpToArrowBody, 5))
+    var basePoint2 = Vect.add(arrowBaseMid, Vect.mult( Vect.mult(perpToArrowBody, 5), -1))
+    return {p1: basePoint1, p2: basePoint2} 
+  }
+
+ return that 
+}
+
+
+var Vect = {
+  mult: function(v, m){
+          return {x: v.x * m,
+                  y: v.y * m}
+         },
+
+  negRecipricol: function(v){
+                  return {x: -1 * v.y,
+                          y: 1 * v.x}
+                 },
+  
+  add: function(v1, v2){
+        return {x: v1.x + v2.x,
+                y: v1.y + v2.y}
+       },
+
+  diff: function(v1, v2){
+          return {x: v1.x - v2.x,
+                  y: v1.y - v2.y}
+        },
+
+  normalize: function(v){
+             var magnitude = Math.sqrt( Math.pow(v.x, 2) + Math.pow(v.y, 2) ) 
+             return {x: v.x/magnitude,
+                     y: v.y/magnitude}
+            }
 }

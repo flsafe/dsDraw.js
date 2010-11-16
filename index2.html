@@ -20,7 +20,10 @@
           ctx.save()
             var array = ["a", "frank", "\\0", 100, null, 20000]
             drawer = arrayDrawer({})
-            drawer.drawArray(array, ctx)
+            drawer.draw(array, ctx)
+
+            arrow = arrowDrawer({})
+            arrow.draw({x: 100, y: 100}, {x: 200, y: 200}, ctx)
           ctx.restore()
         }  
       }  
